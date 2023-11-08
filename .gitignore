@@ -1,0 +1,4 @@
+*.log
+*.temp
+/vendor
+.DS_Store
