@@ -7,7 +7,7 @@ IPv6是旨在解决IPv4时代IP地址资源不足而提出的新一代互联网�
 另外，由于代理服务器在境外，故此方案顺便可以翻墙，一举两得解决两大困难，解锁高校网络的最佳体验。因此特别适用于以下情况：
 
 - 校园网流量不够用，又不想交包月费的同学
-- 想要以最快速度，最安全，最自主可控的方案来翻墙（例如访问Google Scholar，Kaggel，OpenAI，以及YouTube，Google，Instagram等网站）的师生
+- 想要以最快速度，最安全，最自主可控的方案来翻墙（例如访问Google Scholar，Kaggle，OpenAI，以及YouTube，Google，Instagram等网站）的师生
 - 对目前使用的第三方/学校提供公用的翻墙服务的性价比、安全性、隐私性、速度不满意的广大用户
 
 已知缺点：
@@ -131,7 +131,7 @@ apt install curl wget -y
 
 ## Install x-ui
 
-*x-ui is a beautiful and convenient configuration penal that supports a lot of protocols.* It is the link to the project. https://github.com/FranzKafkaYu/x-ui/ 
+*x-ui is a beautiful and convenient configuration panel that supports a lot of protocols.* It is the link to the project. https://github.com/FranzKafkaYu/x-ui/ 
 
 Install
 
