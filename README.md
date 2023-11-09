@@ -1,18 +1,37 @@
-# 拥抱IPv6，30分钟搞定校园网免流量，顺便翻墙（零基础教程）
+# 零基础教程 | 拥抱IPv6，30分钟搞定校园网免流量和翻墙
 
-——以Google Cloud Plantform(GCP)为例，演示通过Vless（Reality协议）搭建IPv6代理以实现教育网免流量顺便翻墙。
+IPv6是旨在解决IPv4时代IP地址资源不足而提出的新一代互联网协议。今天，大多数高校校园网和运营商提供的4G/5G，应该都支持了IPv6+IPv4，并且为了鼓励IPv6的使用与网路技术的更新换代，我校（包括许多兄弟学校）校园网采取的收费模式是IPv4收费，IPv6免费。因此将流量转化为IPv6，可以合规地实现校园网免流上网。
 
-Cypherpunk Li 
+依据上述思路，本文利用Google Cloud Plantform(GCP) 提供的免费额度，通过Vless（Reality）协议，搭建IPv6代理服务器以实现校园网免流量。
+
+另外，由于代理服务器在境外，故此方案顺便可以翻墙，一举两得解决两大困难，解锁高校网络的最佳体验。因此特别适用于以下情况：
+
+- 校园网流量不够用，又不想交包月费的同学
+- 想要以最快速度，最安全，最自主可控的方案来翻墙（例如访问Google Scholar，Kaggel，OpenAI，以及YouTube，Google，Instagram等网站）的师生
+- 对目前使用的第三方/学校提供公用的翻墙服务的性价比、安全性、隐私性、速度不满意的广大用户
+
+已知缺点：
+
+- 以Google机房为代理服务器，会被OpenAI发现，因此这个方法不能直接注册登录 ChatGPT，但其他第三方的GPT服务，如 poe.com 就没什么问题，因此也没什么影响。
+- IPv6+Reality的方案比较新颖，部分流行的代理软件，如Clash-for-windows, ClashX支持不好。但值得一提的是，近期Clash系列项目风雨飘摇、前途未卜，不少项目删库跑路，众开发者在一夜间噤若寒蝉，在可见的将来社区或不再提供支持，故此时转向本文推荐的客户端，不失为好的契机。
+
+***Now Let’s Start！***
 
 # Preparation
 
-- A VISA/Master Debit/Credit Card (essential for GCP to obtain a $300 bonus for new users, AliPay might be Okay for other server providers)
-- A laptop connected to the global Internet (At least the access to the Google)
-- A network cable (recommended, but not essential)
+- A VISA/Master Debit/Credit Card
+  - Essential for GCP to obtain a $300 bonus for new users, 
+  - AliPay might be Okay for other server providers, like [Vultr](https://www.jixing.one/vps/get-a-vps/)) 
+  - Refer to Appendix 1 for more information
 
-- IPv6 Access 
+- A Computer
+  - Any System you like: Windows, MacOS, Linux…
+  - Connected to the global Internet (At least having access to Google, which means you need a so-called VPN for temporary use, if you don't use the GCP, other VPS providers may not need that)
+  - Your network has IPv6 access 
 
-# Choose a VPS
+- A network cable (Optional)
+
+# Choose a VPS Provider
 
 VPS is short for a virtual private server, to make it easy, you can consider it as a remote computer that is on and connected to the internet 24/7. Domestic and international Internet giants provide such cloud services, the most famous ones are Amazon Web Services (AWS), Google Cloud Platform (GCP), Microsoft Azure, Alibaba Cloud, Tencent Cloud, and Huawei Cloud……
 
@@ -27,29 +46,72 @@ Needless to say, the VPS must support IPv6. Internet Giants usually support IPv6
 2. Click this link https://cloud.google.com to log in to Google Cloud Platform Using your Google account. (If you do not have a Google account, just sign one up.) 
 3. You will need your Visa/Master card in this step to verify your identity, just follow the procedure, and you can successfully log in to the following console.
 
-# Setup VPS (…)
+![SCR-20231109-lxir](./pic/SCR-20231109-lxir.png)
 
-1. Follow this document to open IPv6 support to your subnet. https://cloud.google.com/vpc/docs/create-modify-vpc-networks#subnet-enable-ipv6
+
+
+# Buy and connect to a VPS (…)
+
+1. ## Follow this document to open IPv6 support to your subnet. https://cloud.google.com/vpc/docs/create-modify-vpc-networks#subnet-enable-ipv6
 
    If you don't see the IPv6 setting in this guide, which means the default VPC network doesn't support IPv6, create a new VPC network.
 
-2. Follow this document to set up a new VPS instance and configure IPv6 for instances https://cloud.google.com/compute/docs/ip-addresses/configure-ipv6-address 
+   - Remember to open the ports that you need to use
 
-3. Connect to your VPS using SSH or Browser Shell.
+   
 
-SSH
+2. ## Follow this document to set up a new VPS instance and configure IPv6 for instances https://cloud.google.com/compute/docs/ip-addresses/configure-ipv6-address 
+
+   - Linux system supporting: Debian, Ubuntu, CentOS
+   - Arch: x86_64(amd64), aarch64(arm64)
+
+   
+
+3. ## Connect to your VPS using SSH or Browser Shell.
+
+### Method 1
+
+Support any SSH Client (Putty, Xshell, Powershell, Terminal…..), the following code shows how to link to a remote VPS using the most traditional and common way, SSH in the terminal.
+
+#### Generate a pair of secret keys
 
 ```bash
-# ping the IPv6 ip address to check you can connect to the VPS
+cd ~/.ssh
+ssh-keygen 
+```
+
+#### Copy the public key
+
+```bash
+cat id_rsa.pub
+# Copy the key content printed on the screen
+```
+
+#### Install the public key to GCP
+
+https://cloud.google.com/compute/docs/connect/add-ssh-keys
+
+#### Connect to the remote computer
+
+https://cloud.google.com/compute/docs/connect/standard-ssh
+
+```bash
+# Ping the IPv6 IP address to check you can connect to the VPS
 ping6 YOUR_IPV6_ADDRESS
 
 # link to the VPS using SSH
 ssh username@YOUR_IPV6_ADDRESS
 ```
 
+### Method 2
 
+Google Cloud Platform also supports a modern browser shell, so you neither need to upload your public key nor need to use an SSH client for a secure connection. You can follow the document.
+
+https://cloud.google.com/compute/docs/ssh-in-browser
 
 # Build the Xray Reality
+
+* The following codes should be typed into the remote computer in its shell.
 
 ## Install the required components
 
@@ -69,7 +131,9 @@ apt install curl wget -y
 
 ## Install x-ui
 
-In this guide, for convenience, we use a third-party script. It is the link. https://github.com/FranzKafkaYu/x-ui/ 
+*x-ui is a beautiful and convenient configuration penal that supports a lot of protocols.* It is the link to the project. https://github.com/FranzKafkaYu/x-ui/ 
+
+Install
 
 ```bash
 # 中文版
@@ -88,7 +152,7 @@ if the command doesn't work try this break-up version instead.
 cd ~
 # Download the script
 curl -L https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh > install.sh
-# add execuative authority
+# add executive authority
 sudo chmod +x install.sh
 # run 
 sudo ./install.sh
@@ -155,7 +219,7 @@ You will see:
 
 ## Login to x-ui and set up a node
 
-1. Go to browser and type in the address block:
+1. Go to the browser and type in the address block:
 
 ```
 http://[YOUR_IPV6_ADDRESS]:port/basePath/
@@ -191,11 +255,29 @@ Use your username and passcode to log in.
 
 ![SCR-20231108-ubfc](./pic/SCR-20231108-ubfc.png)
 
-- Click Save 
+- Save 
+
+# Turn on the BBR accelerator (Optional)
+
+BBR is a TCP congestion control algorithm designed by Google researchers and built for the congestion of the modern internet, it can boost your network speed.
+
+Method 1 
+
+```bash
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p
+```
+
+Method 2
+
+```bash
+wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+```
 
 # Using the node (…)
 
-## Recommend Clients
+## Guides for Recommend Clients (Tested)
 
 ### Window
 
@@ -223,38 +305,33 @@ V2rayNG
 
 Other clients may refer to Appendix 3. 
 
-## Notice to data fee-free 
+## Data fee-free?
 
-Best Practice:
+Best Practice: (Speed Up to 1000Mbps!)
 
-1. Using a network cable to connect to a PC RJ45 Port
-2. no need to log in to the school internet.
-3. Turn on the proxy client (For example, the V2rayN icon will turn red)
-4. Enjoy the **FREE** internet.
+1. Use a network cable to connect to an RJ45 Port in your Dormitory
+2. Even no need to log in to the school internet gateway.
+
+![SCR-20231109-nbrs](./pic/SCR-20231109-nbrs.png)
+
+1. Turn on the proxy client (For example, the V2rayN icon will turn red)
+2. Enjoy the **FREE** internet.
 
 Other choices:
 
 1. Connecting to school wifi, like BNU-Mobile using your phone
-
-2. go to settings and change the Wi-Fi settings
-
-   - Change the IPv4 address mode to manual, and change the IPv4 address to anything wrong
-
-   - keep the IPv6 address auto and right.
-
-3. Turn on proxy client like Shadowrocket.
-
+2. Turn on a proxy client like Shadowrocket.
 4. Enjoy the **FREE** internet.
 
 # Appendix
 
-1. How to get a VISA/Master Card for College Students
+1. How to get a VISA/Master Card (For Chinese College Students)
 
 Students who have traveled internationally, or gone online oversea shopping might be familiar with these VISA/Master Cards. That usually includes several categories, including Credit, Debit, and Prepaid Debit.
 
-According to regulations, now it is nearly impossible for a student without a paid job to get a V/M credit card from banks in China Mainland alone. Most undergraduate students are only allowed to open a UnionPay credit without any overdraft, to be honest, these "fake" UnionPay credit cards are useless.
+According to regulations, now it is nearly impossible for a student without a paid job to get a V/M credit card from banks in China Mainland alone. Most undergraduate students are only allowed to open a UnionPay credit card without any overdraft, to be honest, these "fake" UnionPay credit cards are useless.
 
-I highly recommend opening an attached card of your parent's credit account. You can share the overdraft limit of your parent and get all the benefits and convenience of a credit card. Both you and your parent can pay the credit card bill. The only drawback is that your parent will be able to monitor your consumption. If you can not get an attached card, another recommendation is to apply for a VISA/Master Debit card, one of the popular choices is BOC Monet Debit (Mastercard).
+I highly recommend opening an attached card of your parent's credit account. You can share the overdraft limit of your parent and get all the benefits and convenience of a credit card. Both you and your parent can pay the credit card bill. The only drawback is that your parent can monitor your consumption. If you can not get an attached card, another recommendation is to apply for a VISA/Master Debit card, one of the popular choices is BOC Monet Debit (Mastercard).
 
 However, if you are going abroad or to HK SAR in the near future, you may easily open such accounts in their bank branches. In Bank of America, you may even get a cash-back credit card without an SSN (Social Secure Number, similar to an ID number). In HK, you can easily open a digital bank account (like ZA Bank) using your phone.
 
@@ -321,7 +398,7 @@ Open this link https://www.test-ipv6.com/ if you get 10 scores, then you have fu
      - [sbox-reality](https://github.com/Misaka-blog/sbox-reality)
      - [sing-box-for-ios](https://github.com/SagerNet/sing-box-for-ios)
 
-# Reference (…)
+# References
 
 [1] https://github.com/XTLS/Xray-core
 
