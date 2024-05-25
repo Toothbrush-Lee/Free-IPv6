@@ -109,6 +109,25 @@ Google Cloud Platform also supports a modern browser shell, so you neither need 
 
 https://cloud.google.com/compute/docs/ssh-in-browser
 
+4. ## Configure Correct VPS Firewall Rules.
+
+When setting up your VPS on Google Cloud Platform (GCP), it's crucial to configure the firewall rules correctly. These rules control the incoming and outgoing network traffic to your VPS and ensure that only authorized traffic can access your server.
+
+### Steps to Configure Firewall Rules on GCP:
+
+**Keypoints**
+
+ - Specify the target tags to apply the rule to the correct instances (your VPS).
+ - Define the source IP ranges. For IPv6, this will typically be your IPv6 address block.
+ - Set the allowed protocols and ports.
+
+#### References:
+- For detailed information on how to set up and manage firewall rules, you can refer to Google Cloud's official documentation on [Firewalls](https://cloud.google.com/firewall/docs/firewalls).
+- Additionally, for examples of rules for common use cases and more intricate configurations, see [Using Firewalls on Google Cloud](https://cloud.google.com/firewall/docs/using-firewalls#rules-for-common-use-cases).
+
+#### Warning:
+Incorrect configuration of firewall rules can lead to vulnerabilities or access issues. For example, overly restrictive rules might block legitimate traffic, causing services to be unreachable and leading to errors like a 502 Bad Gateway. Conversely, too permissive rules might expose your server to potential threats. Always double-check your configurations and test them to ensure they work as expected.
+
 # Build the Xray Reality
 
 * The following codes should be typed into the remote computer in its shell.
@@ -225,7 +244,7 @@ You will see:
 http://[YOUR_IPV6_ADDRESS]:port/basePath/
 ```
 
-For example my IPv6 address is *2600:1900:1134:268::* , my port is 12345, my bashPath is /hp23/, then I should type:
+For example my IPv6 address is *2600:1900:1134:268::* , my port is 12345, my basePath is /hp23/, then I should type:
 
 ```
 http://[2600:1900:1134:268::]:12345/hp23/
